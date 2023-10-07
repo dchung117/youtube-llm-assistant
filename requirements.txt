@@ -7,6 +7,7 @@ attrs==23.1.0
 certifi==2023.7.22
 charset-normalizer==3.3.0
 dataclasses-json==0.6.1
+faiss-cpu==1.7.4
 frozenlist==1.4.0
 greenlet==3.0.0
 idna==3.4
@@ -33,4 +34,4 @@ typing-inspect==0.9.0
 typing_extensions==4.8.0
 urllib3==2.0.6
 yarl==1.9.2
--e git+https://github.com/dchung117/youtube-llm-assistant.git@967916fb3a3ec0b2944146350b513720ed6ff010#egg=yt_assist
+-e git+https://github.com/dchung117/youtube-llm-assistant.git@b10a48ead832e5710353037f093082a11b9f525a#egg=yt_assist
