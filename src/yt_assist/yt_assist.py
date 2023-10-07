@@ -6,7 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.llms import OpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 
-from langchain import PromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.vectorstores import FAISS, VectorStore
 
@@ -79,5 +79,6 @@ def get_response_from_query(query: str,
     response = chain(
         {"question": query, "docs": docs_content}
     )
-    response = response.replace("\n", "")
-    return response
+    response["text"] = response["text"].replace("\n", "")
+
+    return response["text"]
