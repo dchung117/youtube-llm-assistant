@@ -13,6 +13,19 @@ from langchain.vectorstores import FAISS, VectorStore
 load_dotenv()
 
 EMBEDDINGS = OpenAIEmbeddings()
+TEMPLATE="""
+    You are a helpful assistant that that can answer questions about youtube videos
+    based on the video's transcript.
+
+    Answer the following question: {question}
+    By searching the following video transcript: {docs}
+
+    Only use the factual information from the transcript to answer the question.
+
+    If you feel like you don't have enough information to answer the question, say "I don't know".
+
+    Your answers should be verbose and detailed.
+"""
 
 def get_vectordb_from_url(url: str) -> VectorStore:
     """
@@ -37,9 +50,34 @@ def get_vectordb_from_url(url: str) -> VectorStore:
         chunk_overlap=100
     )
     docs = text_splitter.split_documents(transcript)
-    print(docs)
-    # Create vector db from transript using OpenAI embeddings
+
+    # Create vector db from documents using OpenAI embeddings
     db = FAISS.from_documents(docs,
         embedding=EMBEDDINGS)
 
     return db
+
+def get_response_from_query(query: str,
+    db: VectorStore,
+    k: int = 4) -> str:
+    # Get similar documents to query
+    docs = db.similarity_search(query, k=k)
+    docs_content = " ".join([d.page_content for d in docs])
+
+    # Create chain
+    llm = OpenAI(model="text-davinci-003")
+    prompt = PromptTemplate(
+        input_variables=["question", "docs"],
+        template=TEMPLATE
+    )
+    chain = LLMChain(
+        llm=llm,
+        prompt=prompt
+    )
+
+    # Get response from formatted prompt
+    response = chain(
+        {"question": query, "docs": docs_content}
+    )
+    response = response.replace("\n", "")
+    return response
